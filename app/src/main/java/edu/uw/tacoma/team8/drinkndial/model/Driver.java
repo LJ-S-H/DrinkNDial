@@ -5,13 +5,31 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
+ * A Driver class contains id, first name, last name, phone number, rating, langitude, and latitude.
+ *
  * Created by leejieun on 3/5/17.
  */
 
 public class Driver {
 
+    public static final Pattern PHONE_PATTERN = Pattern.compile("^[0-9]{10}$");
+
+    public static final Pattern ID_PATTERN = Pattern.compile("^[1-9]\\d*$");
+
+    public static final Pattern LAT_PATTERN =
+            Pattern.compile("^(\\+|-)?(?:90(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-8][0-9])" +
+                    "(?:(?:\\.[0-9]{1,6})?))$");
+
+    public static final Pattern LONG_PATTERN =
+            Pattern.compile("^(\\+|-)?(?:180(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])" +
+                    "(?:(?:\\.[0-9]{1,6})?))$");
+
+    public static final Pattern RATING_PATTERN = Pattern.compile("^[1-5]$");
+
+    /** Column names of dnd_driver table on DB */
     public static final String DRIVER_ID = "driverid",
             FIRST_NAME = "fname",
             LAST_NAME = "lname",
@@ -20,96 +38,197 @@ public class Driver {
             LONGITUDE = "longitude",
             LATITUDE = "latitude";
 
+    /** A driver's id */
     private String mId;
+
+    /** A first name */
     private String mFname;
+
+    /** A last name */
     private String mLname;
+
+    /** A phone number */
     private String mPhone;
+
+    /** A rating */
     private String mRating;
+
+    /** A longitude */
     private String mLongitude;
+
+    /** A latitude */
     private String mLatitude;
+
+    /** A distance */
     private double mDistance;
 
 
-    public Driver(String id, String fname, String lname, String phone, String rating, String longitude, String latitude) {
-        this.mId = id;
-        this.mFname = fname;
-        this.mLname = lname;
-        this.mPhone = phone;
-        this.mRating = rating;
-        this.mLongitude = longitude;
-        this.mLatitude = latitude;
+    /**
+     * Constructs a Driver object
+     * @param id positive whole number
+     * @param fname non null string
+     * @param lname non null string
+     * @param phone format ##########
+     * @param rating number 1-5
+     * @param longitude number<180
+     * @param latitude number<90
+     */
+    public Driver(String id, String fname,
+                  String lname, String phone,
+                  String rating, String longitude, String latitude) {
+        if (isValidID(id)) {
+            this.mId = id;
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+        if (fname != null) {
+            this.mFname = fname;
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+        if (lname != null) {
+            this.mLname = lname;
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+        if (isValidPhone(phone)) {
+            this.mPhone = phone;
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+        if (isValidRating(rating)) {
+            this.mRating = rating;
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+        if (isValidLng(longitude)) {
+            this.mLongitude = longitude;
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+        if (isValidLat(latitude)) {
+            this.mLatitude = latitude;
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+
     }
 
-    public String getId() {
-        return mId;
-    }
-
-    public void setId(String mId) {
-        this.mId = mId;
-    }
-
-    public String getFname() {
-        return mFname;
-    }
-
-    public String getLname() {
-        return mLname;
-    }
-
-    public String getPhone() {
-        return mPhone;
-    }
-
-    public void setPhone(String phone) {
-        this.mPhone = phone;
-    }
-
-    public String getRating() {
-        return mRating;
-    }
-
-    public String getLongitude() {
-        return mLongitude;
-    }
-
-    public String getLatitude() {
-        return mLatitude;
-    }
-
-    public double getDistance() {
-        return mDistance;
-    }
-
-    public void setDistance(double distance) {
-        this.mDistance = distance;
+    public static boolean isValidPhone(String phone) {
+        return phone != null && PHONE_PATTERN.matcher(phone).matches();
     }
 
     /**
-     * Parses the json string, returns an error message if unsuccessful.
-     * Returns driver list if success.
+     * Checks if the valid id is a whole positive number
      *
-     * @param driverJSON @return reason or null if successful.
+     * @param id string
+     * @return boolean
      */
-    public static String parseDriverJSON(String driverJSON, List<Driver> driverList) {
-        String reason = null;
-        if (driverJSON != null) {
-            try {
-                JSONArray arr = new JSONArray(driverJSON);
-                for (int i = 0; i < arr.length(); i++) {
-                    JSONObject obj = arr.getJSONObject(i);
-                    Driver driver = new Driver(obj.getString(Driver.DRIVER_ID),
-                            obj.getString(Driver.FIRST_NAME),
-                            obj.getString(Driver.LAST_NAME),
-                            obj.getString(Driver.PHONE),
-                            obj.getString(Driver.RATING),
-                            obj.getString(Driver.LONGITUDE),
-                            obj.getString(Driver.LATITUDE));
-                    driverList.add(driver);
-                }
-            } catch (JSONException e) {
-                reason = "Unable to parse data, Reason: " + e.getMessage();
-            }
-        }
-        return reason;
+    public static boolean isValidID(String id) {
+        return id != null && ID_PATTERN.matcher(id).matches();
+    }
+
+    public static boolean isValidRating(String rating) {
+        return rating != null && RATING_PATTERN.matcher(rating).matches();
+    }
+
+    public static boolean isValidLat(String lat) {
+        return lat != null && LAT_PATTERN.matcher(lat).matches();
+    }
+
+    public static boolean isValidLng(String lng) {
+        return lng != null && LONG_PATTERN.matcher(lng).matches();
+    }
+
+    public String getmId() {
+        return mId;
+    }
+
+    public void setmId(String mId) {
+        if(isValidID(mId)) {
+            this.mId = mId;
+        } else {throw new IllegalArgumentException();}
+
+    }
+
+    public String getmFname() {
+        return mFname;
+    }
+
+    public void setmFname(String mFname) {
+        if(mFname != null) {
+            this.mFname = mFname;
+        } else {throw new IllegalArgumentException();}
+
+    }
+
+    public String getmLname() {
+        return mLname;
+    }
+
+    public void setmLname(String mLname) {
+        if(mLname != null) {
+            this.mLname = mLname;
+        } else {throw new IllegalArgumentException();}
+
+    }
+
+    public String getmPhone() {
+        return mPhone;
+    }
+
+    public void setmPhone(String mPhone) {
+        if(isValidPhone(mPhone)) {
+            this.mPhone = mPhone;
+        } else {throw new IllegalArgumentException();}
+    }
+
+    public String getmRating() {
+        return mRating;
+    }
+
+    public void setmRating(String mRating) {
+        if(isValidRating(mRating)) {
+            this.mRating = mRating;
+        } else {throw new IllegalArgumentException();}
+
+    }
+
+    public String getmLongitude() {
+        return mLongitude;
+    }
+
+    public void setmLongitude(String mLongitude) {
+        if(isValidLng(mLongitude)) {
+            this.mLongitude = mLongitude;
+        } else {throw new IllegalArgumentException();}
+    }
+
+    public String getmLatitude() {
+        return mLatitude;
+    }
+
+    public void setmLatitude(String mLatitude) {
+        if(isValidLat(mLatitude)) {
+            this.mLatitude = mLatitude;
+        } else {throw new IllegalArgumentException();}
+    }
+
+    public double getmDistance() {
+        return mDistance;
+
+    }
+
+    public void setmDistance(double mDistance) {
+        if(mDistance >= 0) {
+            this.mDistance = mDistance;
+        } else { throw new IllegalArgumentException();}
     }
 }

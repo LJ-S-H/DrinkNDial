@@ -12,11 +12,25 @@ import edu.uw.tacoma.team8.drinkndial.R;
 import edu.uw.tacoma.team8.drinkndial.model.Driver;
 import edu.uw.tacoma.team8.drinkndial.navigation.DriverListFragment.OnListFragmentInteractionListener;
 
+/**
+ * This MyDriverListRecyclerViewAdapter for Driver.
+ *
+ * @version 03/05/2017
+ * @author  Jieun Lee (jieun212@uw.edu)
+ */
 public class MyDriverListRecyclerViewAdapter extends RecyclerView.Adapter<MyDriverListRecyclerViewAdapter.ViewHolder> {
 
+    /** A Driver list */
     private final List<Driver> mValues;
+
+    /** An OnListFragmentInteractionListener */
     private final OnListFragmentInteractionListener mListener;
 
+    /**
+     * Construct a MyDriverListRecyclerViewAdapter with given list and listener
+     * @param items Driver list
+     * @param listener OnListFragmentInteractionListener
+     */
     public MyDriverListRecyclerViewAdapter(List<Driver> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
@@ -33,12 +47,12 @@ public class MyDriverListRecyclerViewAdapter extends RecyclerView.Adapter<MyDriv
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
         holder.mItem = mValues.get(position);
-        holder.mNameTextView.setText(mValues.get(position).getFname() + " " + mValues.get(position).getLname());
-        holder.mPhoneTextView.setText(mValues.get(position).getPhone());
-        holder.mRateTextView.setText(mValues.get(position).getRating());
+        holder.mNameTextView.setText(mValues.get(position).getmFname() + " " + mValues.get(position).getmLname());
+        holder.mPhoneTextView.setText(mValues.get(position).getmPhone());
+        holder.mRateTextView.setText(mValues.get(position).getmRating());
 
 
-        holder.mDistanceTextView.setText(mValues.get(position).getDistance() + " mi");
+        holder.mDistanceTextView.setText(mValues.get(position).getmDistance() + " mi");
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,8 +64,6 @@ public class MyDriverListRecyclerViewAdapter extends RecyclerView.Adapter<MyDriv
                 }
             }
         });
-//        }
-
     }
 
     @Override
@@ -59,7 +71,11 @@ public class MyDriverListRecyclerViewAdapter extends RecyclerView.Adapter<MyDriv
         return mValues.size();
     }
 
+    /**
+     * Inner class for ViewHolder
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
+
         public final View mView;
         public final TextView mNameTextView;
         public final TextView mPhoneTextView;
